@@ -85,7 +85,7 @@ mkOption :: FieldAnnotation -> Q Exp
 mkOption f@(FieldAnnotation fieldName fieldType opt) = do
   let descr = mkArgDescr f
   let s = short opt
-      v = verbose opt
+      v = long opt
       h = help opt
   [| G.Option s v $(descr) h |]
 

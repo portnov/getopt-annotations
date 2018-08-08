@@ -9,11 +9,12 @@ import Data.Default
 import Data.Data
 import Data.Typeable
 import Data.Char (isDigit)
+import Data.String
 import Language.Haskell.TH
 
 data Option = Option {
     short :: [Char],
-    verbose :: [String],
+    long :: [String],
     placeholder :: String,
     help :: String
   }
@@ -21,6 +22,10 @@ data Option = Option {
 
 instance Default Option where
   def = Option [] [] "VALUE" "no help provided"
+
+instance IsString Option where
+  fromString s =
+    def {long = [s], short = [head s]}
 
 data FieldAnnotation = FieldAnnotation Name Type Option
   deriving (Eq, Show)

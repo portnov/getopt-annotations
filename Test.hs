@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 import Data.Default
 import System.Console.GetOpt as G
@@ -13,9 +14,9 @@ data CmdLine = CmdLine {
   }
   deriving (Eq, Show)
 
-{-# ANN cDebug def {short = ['d'], verbose = ["debug"], help = "enable debug"} #-}
-{-# ANN cInputFile def {short = ['i'], verbose = ["input"], help = "input file"} #-}
-{-# ANN cVerboseLevel def {short = ['v'], verbose = ["verbose"], help = "verbosity level"} #-}
+{-# ANN cDebug "debug" {help = "enable debug"} #-}
+{-# ANN cInputFile "input" {help = "input file"} #-}
+{-# ANN cVerboseLevel "verbose" {help = "verbosity level"} #-}
 
 instance Default CmdLine where
   def = CmdLine False "" Nothing
