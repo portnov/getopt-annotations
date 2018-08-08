@@ -8,13 +8,11 @@ module System.Console.GetOpt.Annotations
 
 import Control.Monad
 import qualified Data.Map as M
+import Data.Default
 import Language.Haskell.TH
 import qualified System.Console.GetOpt as G
 
 import System.Console.GetOpt.Annotations.Types
-
-makeDefault :: String -> Option
-makeDefault name = Option [head name] [name] "VALUE" "no help provided"
 
 getRecordAnnotations :: Name -> Q [FieldAnnotation]
 getRecordAnnotations typeName = do
@@ -29,10 +27,12 @@ getRecordAnnotations typeName = do
       forM fields $ \(fieldName, _, fieldType) -> do
         let name = nameBase fieldName
         anns <- reifyAnnotations $ AnnLookupName fieldName
-        case anns of
-          [] -> return $ FieldAnnotation fieldName fieldType (makeDefault name)
-          [opt] -> return $ FieldAnnotation fieldName fieldType opt
-          _ -> fail $ "Only single annotation per record field is supported, but many are provided for " ++ name
+        runIO $ putStrLn $ name ++ ": " ++ show anns
+        let opts = case anns of
+                     [] -> Auto name
+                     [ann] -> ann
+                     _ -> foldr1 (<>) anns
+        return $ FieldAnnotation fieldName fieldType opts
     processConstructor _ = fail "only plain record constructors are supported by now"
 
 parseValue' :: OptionValue a => String -> a
@@ -54,7 +54,7 @@ mkArgDescr (FieldAnnotation fieldName fieldType opt) = do
       arg <- newName "arg"
       options <- newName "options"
       let res = LamE [VarP arg, VarP options] $ RecUpdE (VarE options) [(fieldName, AppE parse (VarE arg))]
-      let ph = placeholder opt
+      let ph = getPlaceholder opt
       [| G.ReqArg $(return res) ph |]
 
     mkSetTrue :: Q Exp
@@ -69,7 +69,7 @@ mkArgDescr (FieldAnnotation fieldName fieldType opt) = do
       arg <- newName "arg"
       mbArg <- newName "mbArg"
       options <- newName "options"
-      let ph = placeholder opt
+      let ph = getPlaceholder opt
       let nothing = ConP (mkName "Nothing") []
           just n = ConP (mkName "Just") [VarP n]
           setJust = RecUpdE (VarE options) [(fieldName, AppE (ConE $ mkName "Just") $ AppE parse (VarE arg))]
@@ -84,9 +84,9 @@ mkArgDescr (FieldAnnotation fieldName fieldType opt) = do
 mkOption :: FieldAnnotation -> Q Exp
 mkOption f@(FieldAnnotation fieldName fieldType opt) = do
   let descr = mkArgDescr f
-  let s = short opt
-      v = long opt
-      h = help opt
+  let s = getShort opt
+      v = getLong opt
+      h = getHelp opt
   [| G.Option s v $(descr) h |]
 
 makeOptions :: Name -> Q Exp

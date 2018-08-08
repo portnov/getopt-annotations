@@ -16,6 +16,7 @@ data CmdLine = CmdLine {
 
 {-# ANN cDebug "debug" {help = "enable debug"} #-}
 {-# ANN cInputFile "input" {help = "input file"} #-}
+{-# ANN cInputFile "file" {help = "input file"} #-}
 {-# ANN cVerboseLevel "verbose" {help = "verbosity level"} #-}
 
 instance Default CmdLine where
