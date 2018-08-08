@@ -1,0 +1,8 @@
+*.hi
+*.o
+*.swp
+*.cabal
+*.dyn_o
+*.dyn_hi
+.stack-work/
+Test

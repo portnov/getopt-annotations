@@ -1,0 +1,28 @@
+name:                getopt-ann
+version:             0.1.0.0
+github:              "portnov/getopt-ann"
+license:             BSD3
+author:              "Ilya V. Portnov"
+maintainer:          "portnov84@rambler.ru"
+copyright:           "2018 Ilya V. Portnov"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+description:         Please see the README on Github at <https://github.com/portnov/getopt-ann#readme>
+
+dependencies:
+  - base >= 4.7 && < 5
+  - containers
+  - data-default
+  - template-haskell >= 2.13
+
+library:
+  source-dirs: src
+  ghc-options:
+  - -O2
+
